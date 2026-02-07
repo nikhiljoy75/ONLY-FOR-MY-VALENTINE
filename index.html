@@ -12,61 +12,68 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: #fce4ec;
             font-family: 'Courier New', Courier, monospace;
             overflow: hidden;
+            text-align: center;
         }
 
         #gifDisplay {
             width: 250px;
-            border-radius: 10px;
-            z-index: 1;
+            border-radius: 15px;
+            margin-bottom: 20px;
         }
 
-        h1 {
-            color: #333;
-            z-index: 1;
-        }
+        h1 { color: #333; padding: 0 20px; }
 
         .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
             margin-top: 50px;
+            min-height: 100px;
         }
 
         button {
             padding: 15px 30px;
             font-size: 1.2rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            z-index: 10;
         }
 
-        /* The button that runs away */
         #yesBtn {
             background-color: #4CAF50;
             color: white;
-            position: absolute;
-            transition: 0.1s ease;
+            position: absolute; /* Allows jumping */
+            z-index: 100;
         }
 
-        /* The button that grows */
         #noBtn {
             background-color: #ff4d4d;
             color: white;
-            position: relative;
-            transition: 0.3s all ease-in-out;
+            transition: 0.3s all ease;
+            transform: scale(0.6); /* Starts small */
         }
 
         .success-content {
             display: none;
-            text-align: center;
+            padding: 20px;
+        }
+
+        .roast-text {
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 2rem;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
     <div id="main-content">
-        <img id="gifDisplay" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG56ZnBndGZueW56ZnBndGZueW56ZnBndGZueW56ZnBndGZueSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qUIm586OT5SK4/giphy.gif">
+        <img id="gifDisplay" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG56ZnBndGZueW56ZnBndGZueW56ZnBndGZueW56ZnBndGZueSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qUIm586OT5SK4/giphy.gif">
         <h1>Will you be my Valentine?</h1>
         
         <div class="buttons">
@@ -76,39 +83,48 @@
     </div>
 
     <div id="success-content" class="success-content">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2I4bm56ZnBndGZueW56ZnBndGZueW56ZnBndGZueW56ZnBndGZueSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0MYt5jPR6QX5pnqM/giphy.gif">
-        <h1 style="color: #ff4d6d;">REVERSE PSYCHOLOGY! ❤️</h1>
-        <p>I knew you'd "No" your way into my heart.</p>
+        <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2I4bm56ZnBndGZueW56ZnBndGZueW56ZnBndGZueW56ZnBndGZueSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0MYt5jPR6QX5pnqM/giphy.gif">
+        <h1 class="roast-text">WOMP</h1>
+        <p style="font-size: 1.5rem;">you gonna die alone cause you so goddamn ugly u femboy</p>
     </div>
 
     <script>
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
-        let noSize = 1;
+        let noSize = 0.6;
+        let attempts = 0;
 
-        // Make Yes button jump away
         const moveYes = () => {
+            // Jump logic
             const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - yesBtn.offsetHeight);
-            
             yesBtn.style.left = `${x}px`;
             yesBtn.style.top = `${y}px`;
 
-            // Every time she tries to click Yes, make No bigger
-            noSize += 0.4;
+            // Growth logic
+            attempts++;
+            noSize += 0.5;
             noBtn.style.transform = `scale(${noSize})`;
+
+            // Visual feedback
+            if(attempts < 5) {
+                console.log("No button not yet active");
+            }
         };
 
         yesBtn.addEventListener('mouseover', moveYes);
-        yesBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            moveYes();
-        });
+        yesBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveYes(); });
 
         function accepted() {
+            // Only allow click if they tried 'Yes' at least 5 times
+            if (attempts < 5) {
+                alert("Nice try. Try hitting 'Yes' first.");
+                return;
+            }
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('success-content').style.display = 'block';
-            document.body.style.backgroundColor = '#ffb6c1';
+            document.body.style.backgroundColor = '#000'; // Black background for the roast
+            document.body.style.color = '#fff';
         }
     </script>
 </body>
