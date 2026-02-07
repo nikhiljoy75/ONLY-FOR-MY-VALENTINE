@@ -1,133 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Question for Amiwa</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #fce4ec;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
-            text-align: center;
-            transition: background-color 0.5s;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Question for Amiwa</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #fce4ec;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+      text-align: center;
+      transition: background-color 0.5s;
+    }
 
-        #gifDisplay {
-            width: 250px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
+    /* YOUR IMAGE (replaces the gif) */
+    #amiwaImage {
+      width: 260px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      border: 4px solid white;
+      display: block;
+    }
 
-        #amiwaImage {
-            width: 260px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            border: 4px solid white;
-        }
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 50px;
+      min-height: 100px;
+      position: relative; /* keeps initial layout stable */
+    }
 
-        .buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            align-items: center;
-            margin-top: 50px;
-            min-height: 100px;
-        }
+    button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 10;
+    }
 
-        button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            z-index: 10;
-        }
+    /* YES is visible at start */
+    #yesBtn {
+      background-color: #4CAF50;
+      color: white;
+      position: relative;
+    }
 
-        #yesBtn {
-            background-color: #4CAF50;
-            color: white;
-            position: absolute;
-        }
+    #noBtn {
+      background-color: #ff4d4d;
+      color: white;
+      transition: 0.2s all ease;
+    }
 
-        #noBtn {
-            background-color: #ff4d4d;
-            color: white;
-            transition: 0.2s all ease;
-        }
+    .success-content {
+      display: none;
+      padding: 20px;
+    }
 
-        .success-content {
-            display: none;
-            padding: 20px;
-        }
-
-        #roastImage {
-            max-width: 300px;
-            border: 5px solid white;
-            margin-bottom: 20px;
-        }
-    </style>
+    #roastImage {
+      max-width: 300px;
+      border: 5px solid white;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
+
 <body>
+  <div id="main-content">
+    <!-- PUT amiwa.jpg in the SAME folder as index.html -->
+    <img id="amiwaImage" src="amiwa.jpg" alt="Amiwa">
 
-    <div id="main-content">
-        <!-- ADDED IMAGE -->
-        <img id="amiwaImage" src="amiwa.jpg" alt="Amiwa">
+    <h1>Amiwa, will you be my Valentine?</h1>
 
-        <img id="gifDisplay" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG56ZnBndGZueW56ZnBndGZueW56ZnBndGZueW56ZnBndGZueSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qUIm586OT5SK4/giphy.gif">
-
-        <h1>Amiwa, will you be my Valentine?</h1>
-        
-        <div class="buttons">
-            <button id="yesBtn">Yes</button>
-            <button id="noBtn" onclick="accepted()">No</button>
-        </div>
+    <div class="buttons" id="buttonContainer">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn" onclick="accepted()">No</button>
     </div>
+  </div>
 
-    <div id="success-content" class="success-content">
-        <img id="roastImage" src="INSERT_LINK_HERE" alt="Roast Image">
-        <h1 style="color: #d32f2f; font-size: 3.5rem; margin: 0;">WOMP</h1>
-        <p style="font-size: 1.5rem; font-weight: bold; padding: 0 20px;">
-            you gonna die alone cause you so goddamn ugly u femboy
-        </p>
-    </div>
+  <div id="success-content" class="success-content">
+    <img id="roastImage" src="INSERT_LINK_HERE" alt="Roast Image">
+    <h1 style="color: #d32f2f; font-size: 3.5rem; margin: 0;">WOMP</h1>
+    <p style="font-size: 1.5rem; font-weight: bold; padding: 0 20px;">
+      you gonna die alone cause you so goddamn ugly u femboy
+    </p>
+  </div>
 
-    <script>
-        const yesBtn = document.getElementById('yesBtn');
-        const noBtn = document.getElementById('noBtn');
-        let noSize = 1;
-        let yesAttempts = 0;
+  <script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
 
-        const moveYes = () => {
-            const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - yesBtn.offsetHeight);
-            yesBtn.style.left = `${x}px`;
-            yesBtn.style.top = `${y}px`;
+    let noSize = 1;
+    let yesAttempts = 0;
+    let activated = false;
 
-            yesAttempts++;
-            noSize += 0.7;
-            noBtn.style.transform = `scale(${noSize})`;
-        };
+    const moveYes = () => {
+      // Keep Yes visible at first; only make it absolute once it starts moving
+      if (!activated) {
+        activated = true;
+        yesBtn.style.position = 'absolute';
+      }
 
-        yesBtn.addEventListener('mouseover', moveYes);
-        yesBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveYes(); });
+      const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
+      const y = Math.random() * (window.innerHeight - yesBtn.offsetHeight);
 
-        function accepted() {
-            if (yesAttempts < 5) {
-                alert("Nice try, Amiwa. Try the Green button first. 🙄");
-                return;
-            }
-            document.getElementById('main-content').style.display = 'none';
-            document.getElementById('success-content').style.display = 'block';
-            document.body.style.backgroundColor = '#000';
-            document.body.style.color = '#fff';
-        }
-    </script>
+      yesBtn.style.left = `${x}px`;
+      yesBtn.style.top = `${y}px`;
+
+      yesAttempts++;
+      noSize += 0.6;
+      noBtn.style.transform = `scale(${noSize})`;
+    };
+
+    yesBtn.addEventListener('mouseover', moveYes);
+    yesBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moveYes();
+    });
+
+    function accepted() {
+      if (yesAttempts < 5) {
+        alert("Nice try 😌 click the green one first");
+        return;
+      }
+      document.getElementById('main-content').style.display = 'none';
+      document.getElementById('success-content').style.display = 'block';
+      document.body.style.backgroundColor = '#000';
+      document.body.style.color = '#fff';
+    }
+  </script>
 </body>
 </html>
