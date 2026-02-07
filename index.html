@@ -22,7 +22,7 @@
             transition: opacity 0.5s ease;
         }
 
-        img {
+        .header-img {
             width: 300px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -38,6 +38,8 @@
             display: flex;
             gap: 20px;
             justify-content: center;
+            align-items: center;
+            min-height: 150px; /* Space for the growing button */
         }
 
         button {
@@ -46,13 +48,13 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: all 0.2s ease;
         }
 
         #yes-btn {
             background-color: #28a745;
             color: white;
-            position: absolute; /* Allows it to jump around */
+            position: absolute; 
             z-index: 1000;
         }
 
@@ -74,19 +76,27 @@
             align-items: center;
             flex-direction: column;
             z-index: 9999;
+            padding: 20px;
         }
 
         .womp-text {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             text-transform: uppercase;
+            margin-top: 20px;
+        }
+
+        .office-gif {
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
 
     <div id="main-container">
-        <img src="amiwa.jpg" alt="Amiwa">
+        <img src="amiwa.jpg" alt="Amiwa" class="header-img">
         <h1>Amiwa, will you be my Valentine?</h1>
 
         <div class="btn-container">
@@ -96,6 +106,7 @@
     </div>
 
     <div id="fail-screen" class="womp-screen">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJndXp4bmM4NHR6Y2Z4bm5mZzRyeGZleGZueGZueGZueGZueGZueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SZ9GZp84pY9S8/giphy.gif" alt="Kevin Malone Crying" class="office-gif">
         <p class="womp-text">WOMP you don't have a valentine you ugly fuck</p>
     </div>
 
@@ -106,12 +117,12 @@
         const failScreen = document.getElementById('fail-screen');
 
         let yesHoverCount = 0;
+        let noClickScale = 1;
 
         // 1. Logic to make the Yes button jump away
         yesBtn.addEventListener('mouseenter', () => {
             yesHoverCount++;
             
-            // Generate random coordinates
             const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - yesBtn.offsetHeight);
             
@@ -122,17 +133,21 @@
         // 2. Logic for the No button
         noBtn.addEventListener('click', () => {
             if (yesHoverCount < 3) {
+                // Grow the button slightly
+                noClickScale += 0.2;
+                noBtn.style.transform = `scale(${noClickScale})`;
+                
                 alert("Don't be shy, press the green 'Yes' button at least 3 times first.");
             } else {
-                // Show the Womp screen
                 mainContainer.style.display = 'none';
                 failScreen.style.display = 'flex';
             }
         });
 
-        // Prevent clicking Yes even if they are super fast
+        // Double insurance: prevent Yes click
         yesBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            alert("Nice try, speedy!");
         });
     </script>
 </body>
