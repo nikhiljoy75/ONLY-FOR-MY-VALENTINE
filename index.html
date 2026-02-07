@@ -1,139 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>A Question for Amiwa</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Amiwa</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #ffe6e6;
+            overflow: hidden;
+            text-align: center;
+        }
 
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #fce4ec;
-      font-family: "Courier New", Courier, monospace;
-      overflow: hidden;
-      text-align: center;
-    }
+        #main-container {
+            transition: opacity 0.5s ease;
+        }
 
-    #main-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-      justify-content: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+        img {
+            width: 300px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
 
-    #amiwaImage {
-      width: 280px;
-      border-radius: 20px;
-      margin-bottom: 18px;
-      border: 4px solid white;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
+        h1 {
+            color: #d63384;
+            margin-bottom: 30px;
+        }
 
-    /* BUTTON AREA */
-    .button-container {
-      width: min(650px, 92vw);
-      height: 260px; /* space for movement later */
-      margin-top: 14px;
-      position: relative;
-    }
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
 
-    /* Start state: buttons are in a flex row and always visible */
-    .button-row {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-      position: absolute;
-      top: 20px;
-      left: 0;
-    }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
 
-    button {
-      padding: 15px 35px;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: bold;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
+        #yes-btn {
+            background-color: #28a745;
+            color: white;
+            position: absolute; /* Allows it to jump around */
+            z-index: 1000;
+        }
 
-    #yesBtn {
-      background-color: #4caf50;
-      color: white;
-    }
+        #no-btn {
+            background-color: #dc3545;
+            color: white;
+        }
 
-    #noBtn {
-      background-color: #ff4d4d;
-      color: white;
-    }
+        .womp-screen {
+            display: none;
+            background-color: black;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
 
-    /* After we “activate chaos”, we switch buttons to absolute */
-    .chaos button {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      transition: transform 0.12s ease-out, left 0.12s ease-out, top 0.12s ease-out;
-    }
-
-    #hint {
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 1rem;
-      color: #6a1b9a;
-      min-height: 1.2em;
-    }
-
-    .success-content {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: fixed;
-      inset: 0;
-      z-index: 2000;
-      background-color: black;
-      text-align: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    #roastImage {
-      max-width: 320px;
-      width: 80vw;
-      border: 5px solid white;
-      border-radius: 18px;
-      margin-bottom: 18px;
-    }
-  </style>
+        .womp-text {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
 </head>
-
 <body>
-  <div id="main-content">
-    <img id="amiwaImage" src="amiwa.jpg" alt="Amiwa" />
-    <h1>Amiwa, will you be my Valentine?</h1>
 
-    <div class="button-container" id="btnArea">
-      <div class="button-row" id="buttonRow">
-        <button id="yesBtn">Yes</button>
-        <button id="noBtn">No</button>
-      </div>
+    <div id="main-container">
+        <img src="amiwa.jpg" alt="Amiwa">
+        <h1>Amiwa, will you be my Valentine?</h1>
+
+        <div class="btn-container">
+            <button id="yes-btn">Yes</button>
+            <button id="no-btn">No</button>
+        </div>
     </div>
 
-    <div id="hint"></div>
-  </div>
+    <div id="fail-screen" class="womp-screen">
+        <p class="womp-text">WOMP you don't have a valentine you ugly fuck</p>
+    </div>
 
-  <div id="success-content" class="success-content">
-    <img id="roastImage" src="amiwa.jpg" alt="Amiwa" />
-    <h1 style="color: #ff4d4d; font-size: 3rem; margin: 0;">
+    <script>
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const mainContainer = document.getElementById('main-container');
+        const failScreen = document.getElementById('fail-screen');
+
+        let yesHoverCount = 0;
+
+        // 1. Logic to make the Yes button jump away
+        yesBtn.addEventListener('mouseenter', () => {
+            yesHoverCount++;
+            
+            // Generate random coordinates
+            const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - yesBtn.offsetHeight);
+            
+            yesBtn.style.left = `${x}px`;
+            yesBtn.style.top = `${y}px`;
+        });
+
+        // 2. Logic for the No button
+        noBtn.addEventListener('click', () => {
+            if (yesHoverCount < 3) {
+                alert("Don't be shy, press the green 'Yes' button at least 3 times first.");
+            } else {
+                // Show the Womp screen
+                mainContainer.style.display = 'none';
+                failScreen.style.display = 'flex';
+            }
+        });
+
+        // Prevent clicking Yes even if they are super fast
+        yesBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
