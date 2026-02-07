@@ -16,16 +16,16 @@
       font-family: 'Courier New', Courier, monospace;
       overflow: hidden;
       text-align: center;
-      transition: background-color 0.5s;
     }
 
     #main-content {
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%;
     }
 
-    /* Centers the image and keeps it a nice size */
+    /* Centered Main Image */
     #amiwaImage {
       width: 280px;
       border-radius: 20px;
@@ -36,16 +36,17 @@
 
     h1 {
       color: #333;
-      margin-bottom: 30px;
+      margin: 10px 0 30px 0;
     }
 
-    .buttons {
+    /* Side-by-side initial container */
+    .button-container {
       display: flex;
       gap: 20px;
       justify-content: center;
       align-items: center;
-      min-height: 100px;
       width: 100%;
+      min-height: 150px;
       position: relative;
     }
 
@@ -55,19 +56,21 @@
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      z-index: 10;
       font-weight: bold;
     }
 
+    /* High Z-index keeps Yes on top of the growing No */
     #yesBtn {
       background-color: #4CAF50;
       color: white;
-      transition: 0.1s;
+      z-index: 999; 
+      transition: transform 0.1s ease;
     }
 
     #noBtn {
       background-color: #ff4d4d;
       color: white;
+      z-index: 10;
       transition: 0.2s all ease;
     }
 
@@ -93,7 +96,7 @@
 
     <h1>Amiwa, will you be my Valentine?</h1>
 
-    <div class="buttons" id="buttonContainer">
+    <div class="button-container">
       <button id="yesBtn">Yes</button>
       <button id="noBtn" onclick="accepted()">No</button>
     </div>
@@ -115,16 +118,16 @@
 
     let noSize = 1;
     let yesAttempts = 0;
-    let activated = false;
+    let isMoving = false;
 
     const moveYes = () => {
-      // Toggle to absolute positioning only when the "chase" begins
-      if (!activated) {
-        activated = true;
+      // Switch to absolute only when she tries to click it
+      if (!isMoving) {
+        isMoving = true;
         yesBtn.style.position = 'absolute';
       }
 
-      // Random position calculation
+      // Keep it within window bounds
       const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
       const y = Math.random() * (window.innerHeight - yesBtn.offsetHeight);
 
@@ -132,7 +135,8 @@
       yesBtn.style.top = `${y}px`;
 
       yesAttempts++;
-      noSize += 0.8; // Grow faster for more "pressure"
+      // Red button grows
+      noSize += 0.7;
       noBtn.style.transform = `scale(${noSize})`;
     };
 
