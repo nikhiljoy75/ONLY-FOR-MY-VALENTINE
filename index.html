@@ -19,7 +19,6 @@
     }
 
     #main-content {
-      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -28,12 +27,14 @@
       justify-content: center;
     }
 
+    /* Fixed Centering for Amiwa's Image */
     #amiwaImage {
       width: 280px;
       border-radius: 20px;
       margin-bottom: 20px;
       border: 4px solid white;
-      z-index: 5; /* Keep image above the growing button */
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      z-index: 5;
     }
 
     h1 {
@@ -61,22 +62,21 @@
       font-weight: bold;
     }
 
-    /* YES stays on top of everything */
+    /* THE FIX: z-index 1000 ensures Yes is ALWAYS on top of No */
     #yesBtn {
       background-color: #4CAF50;
       color: white;
       z-index: 1000; 
-      position: relative; 
+      position: relative;
     }
 
-    /* NO grows behind the YES button */
+    /* No grows but stays on a lower layer (z-index 10) */
     #noBtn {
       background-color: #ff4d4d;
       color: white;
       z-index: 10;
       position: relative;
       transition: transform 0.2s ease-out;
-      transform-origin: center; /* Grows from the middle */
     }
 
     .success-content {
@@ -129,7 +129,7 @@
     let yesAttempts = 0;
 
     const moveYes = () => {
-      // Immediately make Yes move randomly
+      // Switches to absolute positioning once the user tries to click it
       yesBtn.style.position = 'absolute';
       
       const x = Math.random() * (window.innerWidth - yesBtn.offsetWidth);
@@ -140,12 +140,11 @@
 
       yesAttempts++;
       
-      // Make NO grow aggressively
-      noSize += 0.8;
+      // No button grows slightly bigger each time
+      noSize += 0.5;
       noBtn.style.transform = `scale(${noSize})`;
     };
 
-    // Trigger on hover or touch
     yesBtn.addEventListener('mouseover', moveYes);
     yesBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
