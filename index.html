@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A Question for Amiwa</title>
   <style>
     body {
@@ -13,7 +13,7 @@
       height: 100vh;
       margin: 0;
       background-color: #fce4ec;
-      font-family: 'Courier New', Courier, monospace;
+      font-family: "Courier New", Courier, monospace;
       overflow: hidden;
       text-align: center;
     }
@@ -25,20 +25,23 @@
       width: 100%;
       height: 100%;
       justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     #amiwaImage {
       width: 280px;
       border-radius: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       border: 4px solid white;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
 
     .button-container {
       position: relative;
-      width: 100%;
-      height: 300px; /* Space for buttons to move */
+      width: min(650px, 92vw);
+      height: 260px; /* space for movement */
+      margin-top: 10px;
     }
 
     button {
@@ -48,24 +51,37 @@
       border-radius: 12px;
       cursor: pointer;
       font-weight: bold;
-      position: absolute; /* Both buttons need absolute to move */
-      transition: transform 0.1s ease-out;
+      position: absolute;
+      top: 20px;
+      transition: transform 0.12s ease-out, left 0.12s ease-out, top 0.12s ease-out;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
-    /* "Yes" starts on the left */
+    /* Start side-by-side */
     #yesBtn {
-      background-color: #4CAF50;
+      background-color: #4caf50;
       color: white;
-      left: 35%;
-      z-index: 10; 
+      left: 50%;
+      transform: translateX(-120px);
+      z-index: 20; /* keep Yes on top early */
     }
 
-    /* "No" starts on the right, higher Z-index to cover "Yes" */
     #noBtn {
       background-color: #ff4d4d;
       color: white;
-      right: 35%;
-      z-index: 100; 
+      left: 50%;
+      transform: translateX(20px);
+      z-index: 10; /* behind Yes early */
+    }
+
+    #hint {
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #6a1b9a;
+      min-height: 1.2em;
     }
 
     .success-content {
@@ -74,89 +90,181 @@
       align-items: center;
       justify-content: center;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       z-index: 2000;
       background-color: black;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     #roastImage {
       max-width: 320px;
+      width: 80vw;
       border: 5px solid white;
-      margin-bottom: 20px;
+      border-radius: 18px;
+      margin-bottom: 18px;
     }
   </style>
 </head>
 
 <body>
   <div id="main-content">
-    <img id="amiwaImage" src="amiwa.jpg" alt="Amiwa">
+    <img id="amiwaImage" src="amiwa.jpg" alt="Amiwa" />
     <h1>Amiwa, will you be my Valentine?</h1>
 
-    <div class="button-container">
+    <div class="button-container" id="btnArea">
       <button id="yesBtn">Yes</button>
-      <button id="noBtn" onclick="accepted()">No</button>
+      <button id="noBtn">No</button>
     </div>
+
+    <div id="hint"></div>
   </div>
 
   <div id="success-content" class="success-content">
-    <img id="roastImage" src="amiwa.jpg" alt="Roast Image">
-    <h1 style="color: #d32f2f; font-size: 3.5rem; margin: 0;">WOMP</h1>
-    <p style="font-size: 1.5rem; font-weight: bold; padding: 0 20px; color: #fff;">
-      you gonna die alone cause you so goddamn ugly u femboy
+    <img id="roastImage" src="amiwa.jpg" alt="Amiwa" />
+    <h1 style="color: #ff4d4d; font-size: 3rem; margin: 0;">WOMP</h1>
+    <p style="font-size: 1.3rem; font-weight: bold; padding: 0 20px; color: #fff; max-width: 720px;">
+      Okay okay, I get it 😭
     </p>
   </div>
 
   <script>
-    const yesBtn = document.getElementById('yesBtn');
-    const noBtn = document.getElementById('noBtn');
-    const successContent = document.getElementById('success-content');
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const successContent = document.getElementById("success-content");
+    const btnArea = document.getElementById("btnArea");
+    const hint = document.getElementById("hint");
 
+    let attempts = 0;        // counts "chaos" attempts
     let noScale = 1;
-    let attempts = 0;
 
-    const moveButtons = () => {
-      // Get random positions within the viewport
-      const pad = 100;
-      const x1 = Math.random() * (window.innerWidth - pad);
-      const y1 = Math.random() * (window.innerHeight - pad);
-      const x2 = Math.random() * (window.innerWidth - pad);
-      const y2 = Math.random() * (window.innerHeight - pad);
+    // how many tries before "No" is allowed to be clicked as the final answer
+    const REQUIRED_TRIES = 3; // set to 4 if you want 4 tries instead
 
-      // Move Yes
-      yesBtn.style.left = `${x1}px`;
-      yesBtn.style.top = `${y1}px`;
+    function setHint(msg) {
+      hint.textContent = msg;
+      if (msg) {
+        clearTimeout(setHint._t);
+        setHint._t = setTimeout(() => (hint.textContent = ""), 1600);
+      }
+    }
 
-      // Move No
-      noBtn.style.left = `${x2}px`;
-      noBtn.style.top = `${y2}px`;
+    function rectsOverlap(r1, r2) {
+      return !(
+        r1.right < r2.left ||
+        r1.left > r2.right ||
+        r1.bottom < r2.top ||
+        r1.top > r2.bottom
+      );
+    }
 
-      // Grow No button
-      noScale += 0.8; 
-      noBtn.style.transform = `scale(${noScale})`;
-      
+    function randomPositionFor(btn, avoidRect) {
+      const areaRect = btnArea.getBoundingClientRect();
+
+      // padding so buttons don't go off edges
+      const pad = 12;
+
+      const bw = btn.offsetWidth;
+      const bh = btn.offsetHeight;
+
+      // clamp range inside container
+      const maxX = Math.max(pad, areaRect.width - bw - pad);
+      const maxY = Math.max(pad, areaRect.height - bh - pad);
+
+      // try a few times to avoid overlapping the other button
+      for (let i = 0; i < 25; i++) {
+        const x = pad + Math.random() * (maxX - pad);
+        const y = pad + Math.random() * (maxY - pad);
+
+        // build a proposed rect in container coordinates
+        const proposed = {
+          left: areaRect.left + x,
+          top: areaRect.top + y,
+          right: areaRect.left + x + bw,
+          bottom: areaRect.top + y + bh,
+        };
+
+        if (!avoidRect || !rectsOverlap(proposed, avoidRect)) {
+          return { x, y };
+        }
+      }
+
+      // fallback (if we can't find a non-overlapping spot)
+      return {
+        x: pad + Math.random() * (maxX - pad),
+        y: pad + Math.random() * (maxY - pad),
+      };
+    }
+
+    function moveButtons() {
       attempts++;
-    };
 
-    // Trigger movement when hovering over YES
-    yesBtn.addEventListener('mouseover', moveButtons);
-    
-    // Also trigger if they try to touch it on mobile
-    yesBtn.addEventListener('touchstart', (e) => {
+      // Early phase: do NOT let No cover Yes
+      const keepYesOnTop = attempts < REQUIRED_TRIES;
+
+      // z-index control so Yes remains clickable early
+      yesBtn.style.zIndex = keepYesOnTop ? "20" : "10";
+      noBtn.style.zIndex = keepYesOnTop ? "10" : "30";
+
+      // Grow No slowly early, then allow bigger growth after threshold
+      if (keepYesOnTop) {
+        noScale = Math.min(noScale + 0.15, 1.35); // capped so it won't swallow Yes
+      } else {
+        noScale = Math.min(noScale + 0.5, 3.2);
+      }
+
+      // Get current yes rect to avoid placing no on top of it (early)
+      const yesRect = yesBtn.getBoundingClientRect();
+
+      // Position Yes randomly
+      const posYes = randomPositionFor(yesBtn, null);
+      yesBtn.style.left = `${posYes.x}px`;
+      yesBtn.style.top = `${posYes.y}px`;
+      yesBtn.style.transform = "none";
+
+      // After moving Yes, get its new rect to avoid overlap if needed
+      const newYesRect = yesBtn.getBoundingClientRect();
+
+      // Position No (avoid overlapping Yes early)
+      const posNo = randomPositionFor(noBtn, keepYesOnTop ? newYesRect : null);
+      noBtn.style.left = `${posNo.x}px`;
+      noBtn.style.top = `${posNo.y}px`;
+
+      // Apply No scaling (keep translate out; absolute positioning handles layout)
+      noBtn.style.transform = `scale(${noScale})`;
+
+      if (attempts < REQUIRED_TRIES) {
+        setHint("Try clicking Yes 😌");
+      } else {
+        setHint("Alright… now you can click No 😭");
+      }
+    }
+
+    // Trigger chaos when hovering / touching YES
+    yesBtn.addEventListener("mouseover", moveButtons);
+    yesBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      moveButtons();
+    }, { passive: false });
+
+    // Optional: clicking Yes can also trigger chaos
+    yesBtn.addEventListener("click", (e) => {
       e.preventDefault();
       moveButtons();
     });
 
-    function accepted() {
-      // Require at least some chaos before allowing the click
-      if (attempts < 3) {
-        alert("Wait, you haven't even tried to click 'Yes' yet!");
+    // No is only "final" after REQUIRED_TRIES.
+    // Before that, clicking No just moves things again (no popup).
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (attempts < REQUIRED_TRIES) {
+        setHint("Not yet 😭 go for Yes first");
+        moveButtons();
         return;
       }
-      successContent.style.display = 'flex';
-    }
+      successContent.style.display = "flex";
+    });
   </script>
 </body>
 </html>
